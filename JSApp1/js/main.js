@@ -9,10 +9,97 @@ var after = s.match(/\((.+)\)/)[1];
 var sample = "        ALL     2       2           2";
 //var sample2="         ALL  3    3       3";
 var sample2 = "         ALL           ";
-var sample3 = "   DMON    : CHIP0(2),CHIP0(8);"
-var sample4 = "   DMON    : CHIP0(4),CHIP0(6)"
-var sample5 = "    CHIP0(5),CHIP0(3);"
+var sample3 = "   DMON    : CHIP0(1),CHIP0(2);"
+var sample4 = "   DMON    : CHIP0(3),CHIP0(4)"
+var sample5 = "    CHIP0(5),CHIP0(6);"
+var sample6 = "   DMON    : CHIP0(7),CHIP0(8);"
+var sample7 = "   DMON    : CHIP0(9),CHIP0(10)"
+var sample8 = "    CHIP0(11),CHIP0(12);"
 
+
+var testList = [];
+testList.push(sample);
+testList.push(sample2);
+testList.push(sample3);
+testList.push(sample4);
+testList.push(sample5);
+testList.push(sample6);
+testList.push(sample7);
+testList.push(sample8);
+
+
+//console.log(testList[7]);
+
+var cFlg = false;
+var tList = [];
+var totalList = [];
+
+
+for (var i = 0; i < testList.length; i++) {
+    var tmpData = String(testList[i]);
+
+    if ((testList[i].indexOf(":") == -1) && (testList[i].indexOf(";") == -1)) {
+        continue;
+    } else if ((testList[i].indexOf(":") != -1)) {
+        //:が含まれる場合、項目行とする
+        //同じ行に終端記号があれば
+        if ((testList[i].indexOf(";") != -1)) {
+            cFlg = false;
+        } else {
+            //含まれていない場合
+            //コンティニューのフラグを立てる
+            cFlg = true;
+        }
+        //取得処理
+        var test_split = testList[i].split(":");
+        //前後の余白をなくしたネット名
+        var split3_NetName = test_split[0].trim();
+        //ネット名を端子情報配列に格納
+        tList.push(split3_NetName);
+        //端子情報部を抽出し、配列化
+        var split3_1 = test_split[1].trim().split(",");
+        //配列化した端子情報を反復処理して、()内の値を抜き出す
+        for (var j = 0; j < split3_1.length; j++) {
+            //値の文字列化
+            var tmpStr = String(split3_1[j]);
+            //()内の値を抽出
+            var after = tmpStr.match(/\((.+)\)/)[1];
+            //各番号を端子情報配列に格納
+            tList.push(after);
+        }
+        //改行列でかつ、コンティニューフラグがたっている場合 
+    } else if (cFlg) {
+        //同じ行に終端記号があれば
+        if ((testList[i].indexOf(";") != -1)) {
+            cFlg = false;
+        } else {
+            //含まれていない場合
+            //コンティニューのフラグを立てる
+            cFlg = true;
+        }
+        //取得処理
+        //端子情報部を抽出し、配列化
+        var splitc_1 = testList[i].trim().split(",");
+        //配列化した端子情報を反復処理して、()内の値を抜き出す
+        for (var n = 0; n < splitc_1.length; n++) {
+            //値の文字列化
+            var tmpStr_c = String(splitc_1[n]);
+            //()内の値を抽出
+            var after_c = tmpStr_c.match(/\((.+)\)/)[1];
+            //各番号を端子情報配列に格納
+            tList.push(after_c);
+        }
+    }
+
+    //コンティニューフラグが立ってない場合、リストに追加し、tListの初期化
+    if ((tList != "") && cFlg == false) {
+        totalList.push(tList);
+        tList = [];
+    }
+
+}
+
+console.log(totalList);
 
 var split = sample.split("    ");
 var split2 = sample2.split(" ");
@@ -42,7 +129,7 @@ if (ans != -1) {
         var after = split_Str[j].match(/\((.+)\)/)[1];
         test.push(after);
     }
-    console.log(test);
+    //console.log(test);
 }
 //ネット名と端子情報に分割
 var split3 = testStr.split(":");
