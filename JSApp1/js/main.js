@@ -9,10 +9,10 @@ var after = s.match(/\((.+)\)/)[1];
 var sample = "        ALL     2       2           2";
 //var sample2="         ALL  3    3       3";
 var sample2 = "         ALL           ";
-var sample3 = "   DMON    : CHIP0(1),CHIP0(2);"
+var sample3 = "   DMON    : CHIP0(1),Ball0(2);"
 var sample4 = "   DMON    : CHIP0(3),CHIP0(4)"
 var sample5 = "    CHIP0(5),CHIP0(6);"
-var sample6 = "   DMON    : CHIP0(7),CHIP0(8);"
+var sample6 = "   DMON    : CHIP0(7),Ball0(8);"
 var sample7 = "   DMON    : CHIP0(9),CHIP0(10)"
 var sample8 = "    CHIP0(11),CHIP0(12);"
 
@@ -34,6 +34,8 @@ var cFlg = false;
 var tList = [];
 var totalList = [];
 
+var netnameList = [];
+var NoList = [];
 
 for (var i = 0; i < testList.length; i++) {
     var tmpData = String(testList[i]);
@@ -62,10 +64,12 @@ for (var i = 0; i < testList.length; i++) {
         for (var j = 0; j < split3_1.length; j++) {
             //値の文字列化
             var tmpStr = String(split3_1[j]);
-            //()内の値を抽出
-            var after = tmpStr.match(/\((.+)\)/)[1];
-            //各番号を端子情報配列に格納
-            tList.push(after);
+            if ((tmpStr.indexOf("CHIP") != -1)) {
+                //()内の値を抽出
+                var after = tmpStr.match(/\((.+)\)/)[1];
+                //各番号を端子情報配列に格納
+                tList.push(after);
+            }
         }
         //改行列でかつ、コンティニューフラグがたっている場合 
     } else if (cFlg) {
@@ -82,12 +86,14 @@ for (var i = 0; i < testList.length; i++) {
         var splitc_1 = testList[i].trim().split(",");
         //配列化した端子情報を反復処理して、()内の値を抜き出す
         for (var n = 0; n < splitc_1.length; n++) {
-            //値の文字列化
-            var tmpStr_c = String(splitc_1[n]);
-            //()内の値を抽出
-            var after_c = tmpStr_c.match(/\((.+)\)/)[1];
-            //各番号を端子情報配列に格納
-            tList.push(after_c);
+            if ((tmpStr.indexOf("CHIP") != -1)) {
+                //値の文字列化
+                var tmpStr_c = String(splitc_1[n]);
+                //()内の値を抽出
+                var after_c = tmpStr_c.match(/\((.+)\)/)[1];
+                //各番号を端子情報配列に格納
+                tList.push(after_c);
+            }
         }
     }
 
@@ -99,7 +105,29 @@ for (var i = 0; i < testList.length; i++) {
 
 }
 
+for (var y = 0; y < totalList.length; y++) {
+    var temp = [];
+    var str = "";
+    temp = totalList[y];
+    //console.log(totalList[y]);
+    netnameList.push(temp[0]);
+    for (var x = 1; x < temp.length; x++) {
+        if (x == (temp.length - 1)) {
+            str += temp[x];
+        } else {
+            str += temp[x] + ",";
+        }
+    }
+    NoList.push(str);
+}
+
 console.log(totalList);
+console.log(netnameList);
+//出力:[ 'DMON', 'DMON', 'DMON', 'DMON' ]
+console.log(NoList);
+//出力:[ '1', '3,4,5,6', '7', '9,10,11,12' ]
+
+
 
 var split = sample.split("    ");
 var split2 = sample2.split(" ");
